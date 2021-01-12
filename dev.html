@@ -27,45 +27,67 @@
     <script type="text/javascript" src="node_modules/kity/dist/kity.js"></script>
 </head>
 <body>
-    <script id="minder-view" type="application/kityminder" minder-data-type="json">
-    {
-        "root": {
-            "data": {
-                "text": "百度产品",
-                "image": "https://www.baidu.com/img/bd_logo1.png?where=super",
-                "imageSize": { "width": 270, "height": 129 }
-            },
-            "children": [
-                { "data": { "text": "新闻" } },
-                { "data": { "text": "网页", "priority": 1 } },
-                { "data": { "text": "贴吧", "priority": 2 } },
-                { "data": { "text": "知道", "priority": 2 } },
-                { "data": { "text": "音乐", "priority": 3 } },
-                { "data": { "text": "图片", "priority": 3 } },
-                { "data": { "text": "视频", "priority": 3 } },
-                { "data": { "text": "地图", "priority": 3 } },
-                { "data": { "text": "百科", "priority": 3 } },
-                { "data": { "text": "更多", "hyperlink": "http://www.baidu.com/more" } }
-            ]
-        }
-    }
-    </script>
+<div id="minder-view"></div>
 </body>
 
 <!-- *************************** Module 形式加载引入 **************************** -->
 <script type="text/javascript" src="node_modules/seajs/dist/sea-debug.js"></script>
 <script type="text/javascript">
-    /* global seajs */
-    seajs.config({
-        base: './src'
-    });
-    define('start', function(require) {
-        var Minder = require('kityminder').Minder;
+  /* global seajs */
+  seajs.config({
+    base: './src'
+  });
+  define('start', function (require) {
+    var Minder = window.Minder = require('kityminder').Minder;
 
-        // 创建 km 实例
-        var km = window.km = new Minder();
-        km.setup('#minder-view');
+    // 创建 km 实例
+    var km = window.km = new Minder();
+    km.renderTo(document.getElementById('minder-view'));
+    km.importData("json", `
+    {"root":{"data":{"text":"foo","id":"20210112110313-j621q6u","type":"NodeDocument"},"children":[{"data":{"text":"heading1","id":"20210112105830-6rxq8yp","type":"NodeHeading"},"children":[{"data":{"text":"foo1","id":"20210112105917-nuauzey","type":"NodeParagraph"},"children":[]}]},{"data":{"text":"heading2","id":"20210112105914-en49gba","type":"NodeHeading"},"children":[{"data":{"text":"foo23","id":"20210112105704-j9wqidr","type":"NodeParagraph"},"children":[]},{"data":{"text":"item1item2item3i...","id":"20210112110143-l43nefj","type":"NodeList"},"children":[{"data":{"text":"item1item2item3i...","id":"20210112110144-nrrg37n","type":"NodeListItem"},"children":[{"data":{"text":"item1","id":"","type":"NodeParagraph"},"children":[]},{"data":{"text":"item2item3item22","id":"20210112110148-jdgr0lr","type":"NodeList"},"children":[{"data":{"text":"item2item3","id":"20210112110148-wq8eh95","type":"NodeListItem"},"children":[{"data":{"text":"item2","id":"","type":"NodeParagraph"},"children":[]},{"data":{"text":"item3","id":"20210112110150-ma39f7g","type":"NodeList"},"children":[{"data":{"text":"item3","id":"20210112110150-8x7ontm","type":"NodeListItem"},"children":[]}]}]},{"data":{"text":"item22","id":"20210112110154-t6yp480","type":"NodeListItem"},"children":[]}]}]},{"data":{"text":"item11","id":"20210112110156-mv3hta2","type":"NodeListItem"},"children":[]}]}]}]}}
+    `).then(function () {
+      km.getRoot().setLayout("right")
+      km.useTheme("snow");
+    })
+
+    km.on("dblclick", (obj) => {
+      console.log(km.getSelectedNode())
+    })
+
+    km.on('dragtree.mousemove', function (e) {
+      const selectedNodes = e.minder.getSelectedNodes()
+      if (1 !== selectedNodes.length) {
+        e.stopPropagation()
+        console.log("stopPropagation")
+        return
+      }
+
+      const targetNode = e.getTargetNode()
+      if (!targetNode) {
+        return
+      }
+
+      const selectNode = selectedNodes[0]
+      console.log("select: ", selectNode.data)
+      console.log("target: ", targetNode.data)
+
+      if (selectNode.data.id === targetNode.data.id) {
+        console.log("same node")
+        return
+      }
+
+      const targetType = targetNode.data.type
+      if ("NodeParagraph" === targetType) {
+        console.log("node is not container, stopPropagation", e)
+        e.stopPropagationImmediately()
+        e.stopPropagation()
+        e.preventDefault()
+        return false
+      }
+
     });
-    seajs.use('start');
+
+  });
+  seajs.use('start');
 </script>
 </html>
