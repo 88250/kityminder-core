@@ -3706,7 +3706,10 @@ _p[33] = {
             return group + uuidMap[group];
         };
         exports.guid = function() {
-            return (+new Date() * 1e6 + Math.floor(Math.random() * 1e6)).toString(36);
+            if (typeof Lute === "undefined") {
+                return (+new Date() * 1e6 + Math.floor(Math.random() * 1e6)).toString(36);
+            }
+            return Lute.NewNodeID();
         };
         exports.trim = function(str) {
             return str.replace(/(^[ \t\n\r]+)|([ \t\n\r]+$)/g, "");
@@ -5294,9 +5297,6 @@ _p[46] = {
                                 this.execCommand("expandtolevel", i);
                             }
                         }
-                        e.stopPropagation();
-                        e.preventDefault();
-                        return false;
                     }
                 },
                 renderers: {
@@ -6083,6 +6083,9 @@ _p[53] = {
                 if (!parent) {
                     return null;
                 }
+                if (parent.data.type !== "NodeDocument" && parent.data.type !== "NodeHeading" && parent.data.type !== "NodeList") {
+                    return null;
+                }
                 var node = km.createNode(text, parent);
                 km.select(node, true);
                 if (parent.isExpanded()) {
@@ -6092,6 +6095,7 @@ _p[53] = {
                     parent.renderTree();
                 }
                 km.layout(600);
+                km._options.insertNode(node);
             },
             queryState: function(km) {
                 var selectedNode = km.getSelectedNode();
@@ -6157,18 +6161,7 @@ _p[53] = {
         var AppendParentCommand = kity.createClass("AppendParentCommand", {
             base: Command,
             execute: function(km, text) {
-                var nodes = km.getSelectedNodes();
-                nodes.sort(function(a, b) {
-                    return a.getIndex() - b.getIndex();
-                });
-                var parent = nodes[0].parent;
-                var newParent = km.createNode(text, parent, nodes[0].getIndex());
-                nodes.forEach(function(node) {
-                    newParent.appendChild(node);
-                });
-                newParent.setGlobalLayoutTransform(nodes[nodes.length >> 1].getGlobalLayoutTransform());
-                km.select(newParent, true);
-                km.layout(600);
+                return null;
             },
             queryState: function(km) {
                 var nodes = km.getSelectedNodes();

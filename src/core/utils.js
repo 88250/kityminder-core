@@ -11,7 +11,10 @@ define(function(require, exports) {
     };
 
     exports.guid = function() {
-        return (+new Date() * 1e6 + Math.floor(Math.random() * 1e6)).toString(36);
+        if (typeof Lute === "undefined") {
+            return (+new Date() * 1e6 + Math.floor(Math.random() * 1e6)).toString(36);
+        }
+        return Lute.NewNodeID();
     };
 
     exports.trim = function(str) {

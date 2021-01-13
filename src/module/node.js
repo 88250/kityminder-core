@@ -23,6 +23,9 @@ define(function(require, exports, module) {
             if (!parent) {
                 return null;
             }
+            if (parent.data.type !== "NodeDocument" && parent.data.type !== "NodeHeading" && parent.data.type !== "NodeList") {
+                return null;
+            }
             var node = km.createNode(text, parent);
             km.select(node, true);
             if (parent.isExpanded()) {
@@ -33,6 +36,7 @@ define(function(require, exports, module) {
                 parent.renderTree();
             }
             km.layout(600);
+            km._options.insertNode(node);
         },
         queryState: function(km) {
             var selectedNode = km.getSelectedNode();
@@ -102,21 +106,22 @@ define(function(require, exports, module) {
     var AppendParentCommand = kity.createClass('AppendParentCommand', {
         base: Command,
         execute: function(km, text) {
-            var nodes = km.getSelectedNodes();
-
-            nodes.sort(function(a, b) {
-                return a.getIndex() - b.getIndex();
-            });
-            var parent = nodes[0].parent;
-
-            var newParent = km.createNode(text, parent, nodes[0].getIndex());
-            nodes.forEach(function(node) {
-                newParent.appendChild(node);
-            });
-            newParent.setGlobalLayoutTransform(nodes[nodes.length >> 1].getGlobalLayoutTransform());
-
-            km.select(newParent, true);
-            km.layout(600);
+            return null;
+            // var nodes = km.getSelectedNodes();
+            //
+            // nodes.sort(function(a, b) {
+            //     return a.getIndex() - b.getIndex();
+            // });
+            // var parent = nodes[0].parent;
+            //
+            // var newParent = km.createNode(text, parent, nodes[0].getIndex());
+            // nodes.forEach(function(node) {
+            //     newParent.appendChild(node);
+            // });
+            // newParent.setGlobalLayoutTransform(nodes[nodes.length >> 1].getGlobalLayoutTransform());
+            //
+            // km.select(newParent, true);
+            // km.layout(600);
         },
         queryState: function(km) {
             var nodes = km.getSelectedNodes();
