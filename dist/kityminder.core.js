@@ -5294,6 +5294,9 @@ _p[46] = {
                                 this.execCommand("expandtolevel", i);
                             }
                         }
+                        e.stopPropagation();
+                        e.preventDefault();
+                        return false;
                     }
                 },
                 renderers: {

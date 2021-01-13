@@ -248,6 +248,11 @@ define(function(require, exports, module) {
                             this.execCommand('expandtolevel', i);
                         }
                     }
+
+                    // 不像外传播
+                    e.stopPropagation();
+                    e.preventDefault();
+                    return false;
                 }
             },
             renderers: {
