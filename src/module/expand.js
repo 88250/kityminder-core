@@ -248,11 +248,6 @@ define(function(require, exports, module) {
                             this.execCommand('expandtolevel', i);
                         }
                     }
-
-                    // TODO: V
-                    e.stopPropagation();
-                    e.preventDefault();
-                    return false;
                 }
             },
             renderers: {
