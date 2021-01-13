@@ -4904,32 +4904,29 @@ _p[45] = {
                 var targets = findAvailableParents(this._dragSources, this._minder.getRoot());
                 var source = this._dragSources[0];
                 // 根据块类型判断
-                for (var i = 0; i < targets.length; i++) {
-                    var target = targets[i];
+                targets = targets.filter(function(target) {
                     if ("NodeListItem" === source.data.type) {
                         // 列表项块只能被放置在列表块下
                         if ("NodeList" !== target.data.type) {
-                            targets.splice(i, 1);
+                            return false;
                         }
-                        continue;
                     }
                     if ("NodeList" === target.data.type) {
                         // 列表块只能容纳列表项块
                         if ("NodeListItem" !== source.data.type) {
-                            targets.splice(i, 1);
+                            return false;
                         }
-                        continue;
                     }
-                    if ("NodeHeading" == target.data.type) {
+                    if ("NodeHeading" === target.data.type) {
                         // 标题块可以容纳任何其他块
-                        continue;
+                        return true;
                     }
                     if (!target.data.isContainer) {
                         // 非容器块不能容纳其他块
-                        targets.splice(i, 1);
-                        continue;
+                        return false;
                     }
-                }
+                    return true;
+                });
                 this._dropTargets = targets;
                 this._dropTargetBoxes = this._dropTargets.map(function(source) {
                     return source.getLayoutBox();
@@ -4966,13 +4963,13 @@ _p[45] = {
                 this._minder.getRenderContainer().addShape(this);
             },
             /**
-         * 通过 judge 函数判断 targetBox 和 sourceBox 的位置交叉关系
-         * @param targets -- 目标节点
-         * @param targetBoxMapper -- 目标节点与对应 Box 的映射关系
-         * @param judge -- 判断函数
-         * @returns {*}
-         * @private
-         */
+     * 通过 judge 函数判断 targetBox 和 sourceBox 的位置交叉关系
+     * @param targets -- 目标节点
+     * @param targetBoxMapper -- 目标节点与对应 Box 的映射关系
+     * @param judge -- 判断函数
+     * @returns {*}
+     * @private
+     */
             _boxTest: function(targets, targetBoxMapper, judge) {
                 var sourceBoxes = this._dragSources.map(function(source) {
                     return source.getLayoutBox();
@@ -5003,12 +5000,12 @@ _p[45] = {
                     }
                     if (!intersectBox) return false;
                     /*
-                * Added by zhangbobell, 2015.9.8
-                *
-                * 增加了下面一行判断，修复了循环比较中 targetBox 为折叠节点时，intersetBox 面积为 0，
-                * 而 targetBox 的 width 和 height 均为 0
-                * 此时造成了满足以下的第二个条件而返回 true
-                * */
+        * Added by zhangbobell, 2015.9.8
+        *
+        * 增加了下面一行判断，修复了循环比较中 targetBox 为折叠节点时，intersetBox 面积为 0，
+        * 而 targetBox 的 width 和 height 均为 0
+        * 此时造成了满足以下的第二个条件而返回 true
+        * */
                     if (!area(intersectBox)) return false;
                     // 面积判断，交叉面积大于其中的一半
                     if (area(intersectBox) > .5 * Math.min(area(sourceBox), area(targetBox))) return true;
