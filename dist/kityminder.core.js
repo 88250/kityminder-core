@@ -1,9 +1,9 @@
 /*!
  * ====================================================
- * Kity Minder Core - v1.4.50 - 2018-09-17
+ * Kity Minder Core - v1.4.50 - 2021-01-13
  * https://github.com/fex-team/kityminder-core
  * GitHub: https://github.com/fex-team/kityminder-core.git 
- * Copyright (c) 2018 Baidu FEX; Licensed BSD-3-Clause
+ * Copyright (c) 2021 Baidu FEX; Licensed BSD-3-Clause
  * ====================================================
  */
 
@@ -4841,6 +4841,10 @@ _p[45] = {
             //    2. 标记已启动
             _enterDragMode: function() {
                 this._calcDragSources();
+                if (1 !== this._dragSources.length) {
+                    // 不支持一起拖动多个源块
+                    return false;
+                }
                 if (!this._dragSources.length) {
                     this._startPosition = null;
                     return false;
@@ -4897,7 +4901,36 @@ _p[45] = {
                     });
                     return availables;
                 }
-                this._dropTargets = findAvailableParents(this._dragSources, this._minder.getRoot());
+                var targets = findAvailableParents(this._dragSources, this._minder.getRoot());
+                var source = this._dragSources[0];
+                // 根据块类型判断
+                for (var i = 0; i < targets.length; i++) {
+                    var target = targets[i];
+                    if ("NodeListItem" === source.data.type) {
+                        // 列表项块只能被放置在列表块下
+                        if ("NodeList" !== target.data.type) {
+                            targets.splice(i, 1);
+                        }
+                        continue;
+                    }
+                    if ("NodeList" === target.data.type) {
+                        // 列表块只能容纳列表项块
+                        if ("NodeListItem" !== source.data.type) {
+                            targets.splice(i, 1);
+                        }
+                        continue;
+                    }
+                    if ("NodeHeading" == target.data.type) {
+                        // 标题块可以容纳任何其他块
+                        continue;
+                    }
+                    if (!target.data.isContainer) {
+                        // 非容器块不能容纳其他块
+                        targets.splice(i, 1);
+                        continue;
+                    }
+                }
+                this._dropTargets = targets;
                 this._dropTargetBoxes = this._dropTargets.map(function(source) {
                     return source.getLayoutBox();
                 });
