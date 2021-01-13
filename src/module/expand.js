@@ -249,7 +249,7 @@ define(function(require, exports, module) {
                         }
                     }
 
-                    // 不像外传播
+                    // TODO: V
                     e.stopPropagation();
                     e.preventDefault();
                     return false;
