@@ -60,11 +60,15 @@ define(function(require, exports, module) {
             if (!parent) {
                 return km.execCommand('AppendChildNode', text);
             }
+            if (parent.data.type !== "NodeDocument" && parent.data.type !== "NodeHeading" && parent.data.type !== "NodeList") {
+                return null;
+            }
             var node = km.createNode(text, parent, sibling.getIndex() + 1);
             node.setGlobalLayoutTransform(sibling.getGlobalLayoutTransform());
             km.select(node, true);
             node.render();
             km.layout(600);
+            km._options.insertNode(node);
         },
         queryState: function(km) {
             var selectedNode = km.getSelectedNode();
