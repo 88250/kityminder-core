@@ -4,7 +4,7 @@ define(function(require, exports, module) {
 
     Minder.registerInitHook(function() {
         this.on('beforemousedown', function(e) {
-            this.focus();
+            this.focus(true);
             e.preventDefault();
         });
         this.on('paperrender', function() {
@@ -13,13 +13,16 @@ define(function(require, exports, module) {
     });
 
     kity.extendClass(Minder, {
-        focus: function() {
-            if (!this.isFocused()) {
-                var renderTarget = this._renderTarget;
-                renderTarget.classList.add('focus');
-                this.renderNodeBatch(this.getSelectedNodes());
+        focus: function(isFocus) {
+            // v: 初始化不 focus
+            if (isFocus) {
+                if (!this.isFocused()) {
+                    var renderTarget = this._renderTarget;
+                    renderTarget.classList.add('focus');
+                    this.renderNodeBatch(this.getSelectedNodes());
+                }
+                this.fire('focus');
             }
-            this.fire('focus');
             return this;
         },
 

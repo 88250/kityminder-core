@@ -1,6 +1,6 @@
 /*!
  * ====================================================
- * Kity Minder Core - v1.4.50 - 2021-01-13
+ * Kity Minder Core - v1.4.50 - 2021-01-14
  * https://github.com/fex-team/kityminder-core
  * GitHub: https://github.com/fex-team/kityminder-core.git 
  * Copyright (c) 2021 Baidu FEX; Licensed BSD-3-Clause
@@ -1289,7 +1289,7 @@ _p[14] = {
         var Minder = _p.r(19);
         Minder.registerInitHook(function() {
             this.on("beforemousedown", function(e) {
-                this.focus();
+                this.focus(true);
                 e.preventDefault();
             });
             this.on("paperrender", function() {
@@ -1297,13 +1297,16 @@ _p[14] = {
             });
         });
         kity.extendClass(Minder, {
-            focus: function() {
-                if (!this.isFocused()) {
-                    var renderTarget = this._renderTarget;
-                    renderTarget.classList.add("focus");
-                    this.renderNodeBatch(this.getSelectedNodes());
+            focus: function(isFocus) {
+                // v: 初始化不 focus
+                if (isFocus) {
+                    if (!this.isFocused()) {
+                        var renderTarget = this._renderTarget;
+                        renderTarget.classList.add("focus");
+                        this.renderNodeBatch(this.getSelectedNodes());
+                    }
+                    this.fire("focus");
                 }
-                this.fire("focus");
                 return this;
             },
             blur: function() {
