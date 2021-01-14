@@ -61,7 +61,7 @@ define(function(require, exports, module) {
                     .fill('white');
                 const image = []
                 document.querySelectorAll("#" + node.data.priority + " path").forEach(function (item) {
-                    image.push(new kity.Path().setPathData(item.getAttribute("d")).fill("currentColor").setStyle("transform","scale(0.625)"))
+                    image.push(new kity.Path().setPathData(item.getAttribute("d")).fill(node.getStyle("sub-color")).setStyle("transform","scale(0.625)"))
                 })
                 this.addShapes(image);
                 this.mask = mask;
