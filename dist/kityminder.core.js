@@ -6452,23 +6452,27 @@ _p[56] = {
             // 优先级图标的图形
             var PriorityIcon = kity.createClass("PriorityIcon", {
                 base: kity.Group,
-                constructor: function() {
+                constructor: function(node) {
                     this.callBase();
                     this.setSize(20);
-                    this.create();
+                    this.create(node);
                     this.setId(utils.uuid("node_priority"));
                 },
                 setSize: function(size) {
                     this.width = this.height = size;
                 },
-                create: function() {
+                create: function(node) {
                     var white, back, mask, number;
                     // 4 layer
                     white = new kity.Path().setPathData(MASK_PATH).fill("white");
                     back = new kity.Path().setPathData(BACK_PATH).setTranslate(.5, .5);
                     mask = new kity.Path().setPathData(MASK_PATH).setOpacity(.8).setTranslate(.5, .5);
                     number = new kity.Text().setX(this.width / 2 - .5).setY(this.height / 2).setTextAnchor("middle").setVerticalAlign("middle").setFontItalic(true).setFontSize(12).fill("white");
-                    this.addShapes([ back, mask, number ]);
+                    const image = [];
+                    document.querySelectorAll("#" + node.data.priority + " path").forEach(function(item) {
+                        image.push(new kity.Path().setPathData(item.getAttribute("d")).fill("currentColor").setStyle("transform", "scale(0.625)"));
+                    });
+                    this.addShapes(image);
                     this.mask = mask;
                     this.back = back;
                     this.number = number;
@@ -6523,7 +6527,7 @@ _p[56] = {
                     left: kity.createClass("PriorityRenderer", {
                         base: Renderer,
                         create: function(node) {
-                            return new PriorityIcon();
+                            return new PriorityIcon(node);
                         },
                         shouldRender: function(node) {
                             return node.getData(PRIORITY_DATA);

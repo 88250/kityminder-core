@@ -34,10 +34,10 @@ define(function(require, exports, module) {
         var PriorityIcon = kity.createClass('PriorityIcon', {
             base: kity.Group,
 
-            constructor: function() {
+            constructor: function(node) {
                 this.callBase();
                 this.setSize(20);
-                this.create();
+                this.create(node);
                 this.setId(utils.uuid('node_priority'));
             },
 
@@ -45,7 +45,7 @@ define(function(require, exports, module) {
                 this.width = this.height = size;
             },
 
-            create: function() {
+            create: function(node) {
                 var white, back, mask, number; // 4 layer
 
                 white = new kity.Path().setPathData(MASK_PATH).fill('white');
@@ -59,8 +59,11 @@ define(function(require, exports, module) {
                     .setFontItalic(true)
                     .setFontSize(12)
                     .fill('white');
-
-                this.addShapes([back, mask, number]);
+                const image = []
+                document.querySelectorAll("#" + node.data.priority + " path").forEach(function (item) {
+                    image.push(new kity.Path().setPathData(item.getAttribute("d")).fill("currentColor").setStyle("transform","scale(0.625)"))
+                })
+                this.addShapes(image);
                 this.mask = mask;
                 this.back = back;
                 this.number = number;
@@ -124,7 +127,7 @@ define(function(require, exports, module) {
                     base: Renderer,
 
                     create: function(node) {
-                        return new PriorityIcon();
+                        return new PriorityIcon(node);
                     },
 
                     shouldRender: function(node) {
